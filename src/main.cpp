@@ -1,4 +1,5 @@
 #include "mbed.h"
+#include <string>
 
 PwmOut mypwm(PWM_OUT);
 

@@ -1,18 +1,15 @@
 #include "include/Motor.h"
 
-Motor::Motor(int samplingfreqhz, int pwmfreqhz, int pinnumber, int pwmchannelnumber, 
-						 int encoderadcsamplingfreqhz, int encoderadcsamplingresolution):
-		msamplingfreqhz(samplingfreqhz),
-		mpwmfreqhz(pwmfreqhz),
+Motor::Motor(int pinnumber, int pwmchannelnumber, float outputfreqhz,
+						 float feedbacksamplingfreqhz, float feedbacksamplingresolution):
+		Actuator(outputfreqhz, feedbacksamplingfreqhz, feedbacksamplingresolution),
 		mpinnumber(pinnumber),
-		mpwmchannelnumber(pwmchannelnumber),
-		mencoder(new MotorEncoder(encoderadcsamplingfreqhz,encoderadcsamplingresolution))
+		mpwmchannelnumber(pwmchannelnumber)
 {
-	
 }
 
 Motor::~Motor(){
-	delete mencoder;
+
 }
 
 bool Motor::Initialise(){
@@ -20,8 +17,8 @@ bool Motor::Initialise(){
 	return false;
 }
 
-bool Motor::SetPWMDuty(const float& pwmdutysetpoint){
-
+bool Motor::SetVelocity(const float& velocitysetpoint){
+	
 	return false;
 }
 
@@ -33,4 +30,9 @@ bool Motor::GetPosition(float& position){
 bool Motor::GetVelocity(float& speed){
 			
 	return false;
+}
+
+bool Motor::SetCartesianForce(const float& cartesianforcesetpoint){
+	
+	return true;
 }

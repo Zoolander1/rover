@@ -1,17 +1,17 @@
 #include "mbed.h"
 #include "include/MotorEncoder.h"
+#include "include/Actuator.h"
 #include <cstddef>
-#include <memory>
 
-class Motor{
+class Motor : private Actuator{
 	
 	public:
 		
 		/**
 		Constructor
 		**/
-		Motor(int samplingfreqhz, int pwmfreqhz, int pinnumber, int pwmchannelnumber, 
-					int encoderadcsamplingfreqhz, int encoderadcsamplingresolution);
+		Motor(int pinnumber, int pwmchannelnumber, float outputfreqhz,
+					float feedbacksamplingfreqhz, float feedbacksamplingresolution);
 	
 		/**
 		Deconstructor
@@ -19,37 +19,36 @@ class Motor{
 		virtual ~Motor();
 
 		/**
-		Initialises motor object with position/velocity sampling frequency (Hz),
-		PWM frequency (Hz), Pin Out number, and PWM channel number.
+		Initialises	Pin Out number, PWM channel number, and PWM frequency (Hz).
+		Initialises ADC interrupt frequency, and ADC sampling resolution.
 		Initialises current position and velocity.
 		**/
-		bool Initialise();
+		virtual bool Initialise() override;
 	
 		/**
-		Sets the output PWM duty cycle (to motor driver)
+		Sets the motor velocity (PWM duty cycle to motor driver)
 		**/
-		bool SetPWMDuty(const float& pwmdutysetpoint);
-	
+		virtual bool SetVelocity(const float& velocitysetpoint) override;
+		
 		/**
 		Gets the current motor encoder position
 		**/
-		bool GetPosition(float& position);
+		virtual bool GetPosition(float& currentposition) override;
 	
 		/**
 		Gets the differential of the motor position with respect to the sampling
 		frequency set in Initialise
 		**/
-		bool GetVelocity(float& speed);
+		virtual bool GetVelocity(float& currentvelocity) override;
+	
+		//ISR for A and B encoder change in signal level (pull up A + B signal?).
+		//Timeout when A or B signal change not detected for X microseconds.
+		//Reset timeout timer every time ISR is triggered, when timeout time (X microseconds) has elapsed,
+		//then set velocity to 0 rads/s.
+	
+		virtual bool SetCartesianForce(const float& cartesianforcesetpoint) override;
 	
 	private:
-		
-		int msamplingfreqhz = 0;
-		int mpwmfreqhz = 0;
 		int mpinnumber = 0;
 		int mpwmchannelnumber = 0;
-		int mcurrentposition = 0;
-		int mcurrentvelocity = 0;
-		MotorEncoder* mencoder = NULL;
-		int madcsamplingfreqhz = 0;
-		int madcsamplingresolution = 0;
 };
